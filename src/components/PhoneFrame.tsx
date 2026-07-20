@@ -28,7 +28,7 @@ export function PhoneFrame({ children }: PhoneFrameProps) {
         />
 
         {/* App content */}
-        <div className="relative z-10 h-full w-full overflow-y-auto overflow-x-hidden">
+        <div className="relative z-10 h-full w-full overflow-hidden">
           {children}
         </div>
       </div>
