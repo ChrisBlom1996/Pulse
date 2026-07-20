@@ -11,12 +11,3 @@ export function daysAgo(n: number, from: Date = new Date()): string {
   date.setDate(date.getDate() - n)
   return toDateString(date)
 }
-
-/** Build consecutive completed days ending yesterday (today left open). */
-export function buildStreakHistory(streak: number): Record<string, boolean> {
-  const history: Record<string, boolean> = {}
-  for (let i = 1; i <= streak; i += 1) {
-    history[daysAgo(i)] = true
-  }
-  return history
-}

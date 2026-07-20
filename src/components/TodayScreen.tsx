@@ -1,4 +1,6 @@
 import { useHabitStore } from '../store/useHabitStore'
+import { useAppShell } from './AppShell'
+import { EmptyState } from './EmptyState'
 import { HabitCard } from './HabitCard'
 import { PulseRing } from './PulseRing'
 
@@ -10,23 +12,10 @@ function todayHeading(): string {
   })
 }
 
-function EmptyHabits() {
-  return (
-    <div className="flex flex-col items-start px-1 py-6">
-      <p className="font-display text-xl font-medium tracking-tight text-text-primary">
-        Nothing on your pulse yet
-      </p>
-      <p className="mt-2 max-w-[16rem] text-sm leading-relaxed text-text-muted">
-        Add a habit when you&apos;re ready — this is where you&apos;ll check in
-        each day.
-      </p>
-    </div>
-  )
-}
-
 export function TodayScreen() {
   const habits = useHabitStore((state) => state.habits)
   const toggleHabit = useHabitStore((state) => state.toggleHabit)
+  const { openAddSheet, requestDelete } = useAppShell()
 
   return (
     <div className="flex h-full flex-col bg-bg">
@@ -43,14 +32,18 @@ export function TodayScreen() {
         <PulseRing />
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-[5.5rem]">
+      <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-28">
         {habits.length === 0 ? (
-          <EmptyHabits />
+          <EmptyState onAdd={openAddSheet} />
         ) : (
           <ul className="flex flex-col gap-3">
             {habits.map((habit) => (
               <li key={habit.id}>
-                <HabitCard habit={habit} onToggle={toggleHabit} />
+                <HabitCard
+                  habit={habit}
+                  onToggle={toggleHabit}
+                  onRequestDelete={requestDelete}
+                />
               </li>
             ))}
           </ul>

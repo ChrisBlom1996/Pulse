@@ -1,6 +1,6 @@
 import type { Habit } from '../types'
 
-export const HABIT_STORAGE_KEY = 'pulse-habits-v1'
+export const HABIT_STORAGE_KEY = 'pulse-habits-v2'
 
 /** Slice of store state written to localStorage. */
 export type PersistedHabitState = {

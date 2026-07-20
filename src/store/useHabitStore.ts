@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { buildStreakHistory, daysAgo, toDateString } from '../services/dates'
+import { daysAgo, toDateString } from '../services/dates'
 import {
   HABIT_STORAGE_KEY,
   partializeHabits,
@@ -15,24 +15,6 @@ type HabitState = {
   /** Align completedToday / streak with the current calendar day after rehydrate or midnight. */
   syncForToday: () => void
 }
-
-function createHabit(name: string, icon: string, streak: number): Habit {
-  return {
-    id: crypto.randomUUID(),
-    name,
-    icon,
-    streak,
-    completedToday: false,
-    history: buildStreakHistory(streak),
-  }
-}
-
-const defaultHabits: Habit[] = [
-  createHabit('Hydrate', '💧', 3),
-  createHabit('Code', '💻', 12),
-  createHabit('Meditate', '🧘', 0),
-  createHabit('Read', '📖', 7),
-]
 
 function syncHabitForToday(
   habit: Habit,
@@ -56,7 +38,7 @@ function syncHabitForToday(
 export const useHabitStore = create<HabitState>()(
   persist(
     (set, get) => ({
-      habits: defaultHabits,
+      habits: [],
 
       syncForToday: () => {
         const today = toDateString()
@@ -95,7 +77,7 @@ export const useHabitStore = create<HabitState>()(
       addHabit: (name, icon) => {
         const habit: Habit = {
           id: crypto.randomUUID(),
-          name,
+          name: name.trim(),
           icon,
           streak: 0,
           completedToday: false,
