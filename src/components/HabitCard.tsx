@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import clsx from 'clsx'
+import { useMotionPreference } from '../hooks/useMotionPreference'
 import type { Habit } from '../types'
 
 type HabitCardProps = {
@@ -56,6 +57,7 @@ function ParticleBurst() {
 
 export function HabitCard({ habit, onToggle }: HabitCardProps) {
   const [bursting, setBursting] = useState(false)
+  const { reduceMotion } = useMotionPreference()
   const done = habit.completedToday
 
   useEffect(() => {
@@ -65,7 +67,7 @@ export function HabitCard({ habit, onToggle }: HabitCardProps) {
   }, [bursting])
 
   const handleToggle = () => {
-    if (!done) setBursting(true)
+    if (!done && !reduceMotion) setBursting(true)
     onToggle(habit.id)
   }
 
@@ -73,27 +75,36 @@ export function HabitCard({ habit, onToggle }: HabitCardProps) {
     <motion.button
       type="button"
       onClick={handleToggle}
-      whileTap={{
-        scale: 0.97,
-        boxShadow:
-          'inset 0 0 0 1px var(--accent-pulse), 0 0 20px rgba(94, 234, 212, 0.25)',
-      }}
-      transition={{ type: 'spring', stiffness: 520, damping: 28 }}
+      whileTap={
+        reduceMotion
+          ? { opacity: 0.85 }
+          : {
+              scale: 0.97,
+              boxShadow:
+                'inset 0 0 0 1px var(--accent-pulse), 0 0 20px rgba(94, 234, 212, 0.25)',
+            }
+      }
+      transition={
+        reduceMotion
+          ? { duration: 0.15 }
+          : { type: 'spring', stiffness: 520, damping: 28 }
+      }
       aria-pressed={done}
       className={clsx(
         'relative flex w-full min-h-14 items-center gap-3.5 overflow-hidden',
         'rounded-2xl border px-4 py-3.5 text-left',
         'backdrop-blur-md outline-none',
-        'focus-visible:ring-2 focus-visible:ring-accent-pulse/50',
+        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2',
+        'focus-visible:outline-[color-mix(in_srgb,var(--accent-pulse)_70%,transparent)]',
         done
-          ? 'border-border/50 bg-white/[0.02] opacity-65'
+          ? 'border-border/60 bg-white/[0.025]'
           : 'border-border bg-surface',
       )}
       style={{ WebkitTapHighlightColor: 'transparent' }}
     >
       <span
         className={clsx(
-          'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-xl',
+          'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-xl transition-colors duration-200',
           done ? 'bg-white/[0.03] grayscale' : 'bg-white/[0.06]',
         )}
       >
@@ -103,7 +114,7 @@ export function HabitCard({ habit, onToggle }: HabitCardProps) {
       <span className="min-w-0 flex-1">
         <span
           className={clsx(
-            'block font-display text-[1.05rem] font-medium tracking-tight',
+            'block font-display text-[1.05rem] font-medium tracking-tight transition-colors duration-200',
             done ? 'text-text-muted' : 'text-text-primary',
           )}
         >
@@ -119,10 +130,14 @@ export function HabitCard({ habit, onToggle }: HabitCardProps) {
           {done ? (
             <motion.span
               key="check"
-              initial={{ scale: 0.55, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.55, opacity: 0 }}
-              transition={{ type: 'spring', stiffness: 520, damping: 24 }}
+              initial={reduceMotion ? { opacity: 0 } : { scale: 0.55, opacity: 0 }}
+              animate={reduceMotion ? { opacity: 1 } : { scale: 1, opacity: 1 }}
+              exit={reduceMotion ? { opacity: 0 } : { scale: 0.55, opacity: 0 }}
+              transition={
+                reduceMotion
+                  ? { duration: 0.15 }
+                  : { type: 'spring', stiffness: 520, damping: 24 }
+              }
               className="flex h-7 w-7 items-center justify-center rounded-full bg-accent-pulse text-bg"
             >
               <svg
@@ -147,13 +162,16 @@ export function HabitCard({ habit, onToggle }: HabitCardProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
               className="h-7 w-7 rounded-full border border-border"
             />
           )}
         </AnimatePresence>
       </span>
 
-      <AnimatePresence>{bursting && <ParticleBurst />}</AnimatePresence>
+      <AnimatePresence>
+        {bursting && !reduceMotion && <ParticleBurst />}
+      </AnimatePresence>
     </motion.button>
   )
 }

@@ -1,5 +1,6 @@
 import { motion, useAnimationControls } from 'framer-motion'
 import { useEffect, useRef } from 'react'
+import { useMotionPreference } from '../hooks/useMotionPreference'
 import { useTodayProgress } from '../hooks/useTodayProgress'
 import { useHabitStore } from '../store/useHabitStore'
 
@@ -11,6 +12,7 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 export function PulseRing() {
   const { completed, total, percent } = useTodayProgress()
   const habits = useHabitStore((state) => state.habits)
+  const { reduceMotion } = useMotionPreference()
   const controls = useAnimationControls()
   const prevSignature = useRef<string | null>(null)
   const signature = habits
@@ -27,6 +29,8 @@ export function PulseRing() {
     if (prevSignature.current === signature) return
     prevSignature.current = signature
 
+    if (reduceMotion) return
+
     void controls.start({
       scale: [1, 1.06, 1],
       boxShadow: [
@@ -40,7 +44,7 @@ export function PulseRing() {
         ease: ['easeOut', 'easeIn'],
       },
     })
-  }, [signature, controls])
+  }, [signature, controls, reduceMotion])
 
   return (
     <motion.div
@@ -74,7 +78,11 @@ export function PulseRing() {
           strokeDasharray={CIRCUMFERENCE}
           initial={false}
           animate={{ strokeDashoffset: offset }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          transition={
+            reduceMotion
+              ? { duration: 0 }
+              : { duration: 0.55, ease: [0.22, 1, 0.36, 1] }
+          }
         />
       </svg>
 

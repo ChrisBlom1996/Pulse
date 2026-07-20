@@ -88,14 +88,22 @@ export function BottomNav() {
               end={tab.end}
               className={({ isActive }) =>
                 clsx(
-                  'flex flex-col items-center gap-1 rounded-xl px-2 py-1.5 text-[0.65rem] font-medium tracking-wide transition-colors',
+                  'flex flex-col items-center gap-1 rounded-xl px-2 py-1.5',
+                  'text-[0.65rem] font-medium tracking-wide transition-colors duration-150',
+                  'outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2',
+                  'focus-visible:outline-[color-mix(in_srgb,var(--accent-pulse)_70%,transparent)]',
                   isActive ? 'text-accent-pulse' : 'text-text-muted',
                 )
               }
             >
               {({ isActive }) => (
                 <>
-                  <span className={clsx(isActive && 'drop-shadow-[0_0_8px_rgba(94,234,212,0.45)]')}>
+                  <span
+                    className={clsx(
+                      isActive &&
+                        'drop-shadow-[0_0_8px_rgba(94,234,212,0.45)]',
+                    )}
+                  >
                     {tab.icon}
                   </span>
                   {tab.label}
