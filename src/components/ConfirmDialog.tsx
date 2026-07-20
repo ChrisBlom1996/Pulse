@@ -1,20 +1,25 @@
+import type { ReactNode } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useId } from 'react'
 import { useMotionPreference } from '../hooks/useMotionPreference'
 
-type ConfirmDeleteDialogProps = {
+type ConfirmDialogProps = {
   open: boolean
-  habitName: string
+  title: string
+  description: ReactNode
+  confirmLabel: string
   onCancel: () => void
   onConfirm: () => void
 }
 
-export function ConfirmDeleteDialog({
+export function ConfirmDialog({
   open,
-  habitName,
+  title,
+  description,
+  confirmLabel,
   onCancel,
   onConfirm,
-}: ConfirmDeleteDialogProps) {
+}: ConfirmDialogProps) {
   const { reduceMotion } = useMotionPreference()
   const titleId = useId()
 
@@ -63,12 +68,11 @@ export function ConfirmDeleteDialog({
               id={titleId}
               className="font-display text-lg font-semibold tracking-tight text-text-primary"
             >
-              Delete habit?
+              {title}
             </h2>
-            <p className="mt-2 text-sm leading-relaxed text-text-muted">
-              <span className="text-text-primary">{habitName}</span> and its
-              streak history will be removed. This can&apos;t be undone.
-            </p>
+            <div className="mt-2 text-sm leading-relaxed text-text-muted">
+              {description}
+            </div>
 
             <div className="mt-5 flex gap-3">
               <button
@@ -92,7 +96,7 @@ export function ConfirmDeleteDialog({
                   focus-visible:outline-[color-mix(in_srgb,var(--accent-pulse)_70%,transparent)]
                 "
               >
-                Delete
+                {confirmLabel}
               </button>
             </div>
           </motion.div>

@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { daysAgo, toDateString } from '../services/dates'
+import { clearPersistedHabits } from '../services/exportHabits'
 import {
   HABIT_STORAGE_KEY,
   partializeHabits,
@@ -12,6 +13,8 @@ type HabitState = {
   toggleHabit: (id: string) => void
   addHabit: (name: string, icon: string) => void
   deleteHabit: (id: string) => void
+  /** Wipe in-memory habits and clear persisted localStorage. */
+  resetAllData: () => void
   /** Align completedToday / streak with the current calendar day after rehydrate or midnight. */
   syncForToday: () => void
 }
@@ -88,6 +91,11 @@ export const useHabitStore = create<HabitState>()(
 
       deleteHabit: (id) => {
         set({ habits: get().habits.filter((habit) => habit.id !== id) })
+      },
+
+      resetAllData: () => {
+        set({ habits: [] })
+        clearPersistedHabits()
       },
     }),
     {

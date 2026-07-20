@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Outlet, useLocation, useOutletContext } from 'react-router-dom'
 import { useHabitStore } from '../store/useHabitStore'
 import { AddHabitSheet } from './AddHabitSheet'
 import { BottomNav } from './BottomNav'
-import { ConfirmDeleteDialog } from './ConfirmDeleteDialog'
+import { ConfirmDialog } from './ConfirmDialog'
 
 export type AppShellContext = {
   openAddSheet: () => void
@@ -30,6 +30,13 @@ export function AppShell() {
     openAddSheet: () => setSheetOpen(true),
     requestDelete: setPendingDeleteId,
   }
+
+  const deleteDescription: ReactNode = (
+    <>
+      <span className="text-text-primary">{pendingHabit?.name}</span> and its
+      streak history will be removed. This can&apos;t be undone.
+    </>
+  )
 
   return (
     <div className="relative flex h-full flex-col bg-bg">
@@ -60,9 +67,11 @@ export function AppShell() {
 
       <AddHabitSheet open={sheetOpen} onClose={() => setSheetOpen(false)} />
 
-      <ConfirmDeleteDialog
+      <ConfirmDialog
         open={pendingDeleteId != null && pendingHabit != null}
-        habitName={pendingHabit?.name ?? ''}
+        title="Delete habit?"
+        description={deleteDescription}
+        confirmLabel="Delete"
         onCancel={() => setPendingDeleteId(null)}
         onConfirm={() => {
           if (pendingDeleteId) deleteHabit(pendingDeleteId)
