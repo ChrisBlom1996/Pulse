@@ -34,7 +34,12 @@ export function TodayScreen() {
 
       <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-28">
         {habits.length === 0 ? (
-          <EmptyState onAdd={openAddSheet} />
+          <EmptyState
+            title="No habits yet"
+            description="Build your own list — check in here each day to keep your pulse going."
+            actionLabel="Add your first habit"
+            onAction={openAddSheet}
+          />
         ) : (
           <ul className="flex flex-col gap-3">
             {habits.map((habit) => (
